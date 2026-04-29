@@ -1,7 +1,7 @@
 
-  # WattWallet Fintech App Design
+  # Watt Wallet Buddy
 
-  This is a code bundle for WattWallet Fintech App Design. The original project is available at https://www.figma.com/design/Ng10bdShkFfg1OER7fPeFD/WattWallet-Fintech-App-Design.
+  This is a code bundle for Watt Wallet Buddy. The original project is available at https://www.figma.com/design/Ng10bdShkFfg1OER7fPeFD/Watt-Wallet-Buddy.
 
   ## Running the code
 
