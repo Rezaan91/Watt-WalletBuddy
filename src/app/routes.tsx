@@ -20,6 +20,8 @@ import ChangePasswordScreen from "./components/ChangePasswordScreen";
 import TwoFactorScreen from "./components/TwoFactorScreen";
 import HelpCenterScreen from "./components/HelpCenterScreen";
 import ContactSupportScreen from "./components/ContactSupportScreen";
+import RedeemVouchersScreen from "./components/RedeemVouchersScreen";
+import ManageUsersScreen from "./components/ManageUsersScreen";
 
 export const router = createBrowserRouter([
   {
@@ -35,6 +37,7 @@ export const router = createBrowserRouter([
       { path: "advance", Component: AdvanceScreen },
       { path: "loadshedding", Component: LoadSheddingScreen },
       { path: "rewards", Component: RewardsScreen },
+      { path: "rewards/redeem", Component: RedeemVouchersScreen },
       { path: "transactions", Component: TransactionsScreen },
       { path: "assistant", Component: AIAssistantScreen },
       { path: "settings", Component: SettingsScreen },
@@ -44,6 +47,7 @@ export const router = createBrowserRouter([
       { path: "settings/language", Component: LanguageScreen },
       { path: "settings/password", Component: ChangePasswordScreen },
       { path: "settings/twofactor", Component: TwoFactorScreen },
+      { path: "settings/users", Component: ManageUsersScreen },
       { path: "settings/help", Component: HelpCenterScreen },
       { path: "settings/contact", Component: ContactSupportScreen },
     ],

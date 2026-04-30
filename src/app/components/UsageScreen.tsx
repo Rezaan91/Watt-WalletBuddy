@@ -11,27 +11,27 @@ import {
 } from "recharts";
 
 const dailyData = [
-  { name: "Mon", kwh: 12 },
-  { name: "Tue", kwh: 15 },
-  { name: "Wed", kwh: 10 },
-  { name: "Thu", kwh: 18 },
-  { name: "Fri", kwh: 14 },
-  { name: "Sat", kwh: 22 },
-  { name: "Sun", kwh: 20 },
+  { name: "Mon", kwh: 4.2 },
+  { name: "Tue", kwh: 3.8 },
+  { name: "Wed", kwh: 4.5 },
+  { name: "Thu", kwh: 4.1 },
+  { name: "Fri", kwh: 3.9 },
+  { name: "Sat", kwh: 4.8 },
+  { name: "Sun", kwh: 3.2 },
 ];
 
 const weeklyData = [
-  { name: "Week 1", kwh: 85 },
-  { name: "Week 2", kwh: 92 },
-  { name: "Week 3", kwh: 78 },
-  { name: "Week 4", kwh: 95 },
+  { name: "Week 1", kwh: 28.5 },
+  { name: "Week 2", kwh: 32.4 },
+  { name: "Week 3", kwh: 26.8 },
+  { name: "Week 4", kwh: 24.3 },
 ];
 
 const monthlyData = [
-  { name: "Jan", kwh: 340 },
-  { name: "Feb", kwh: 320 },
-  { name: "Mar", kwh: 380 },
-  { name: "Apr", kwh: 295 },
+  { name: "Jan", kwh: 125 },
+  { name: "Feb", kwh: 118 },
+  { name: "Mar", kwh: 132 },
+  { name: "Apr", kwh: 112 },
 ];
 
 export default function UsageScreen() {
@@ -110,17 +110,18 @@ export default function UsageScreen() {
           </div>
 
           <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={data} key={period}>
+            <AreaChart data={data} key={`chart-${period}`}>
               <defs>
-                <linearGradient id={`colorKwh-${period}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#FFA500" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#FFA500" stopOpacity={0} />
+                <linearGradient key={`gradient-${period}`} id={`colorKwh-${period}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop key={`stop1-${period}`} offset="5%" stopColor="#FFA500" stopOpacity={0.3} />
+                  <stop key={`stop2-${period}`} offset="95%" stopColor="#FFA500" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="name" stroke="#94a3b8" />
-              <YAxis stroke="#94a3b8" />
+              <CartesianGrid key={`grid-${period}`} strokeDasharray="3 3" stroke="#334155" />
+              <XAxis key={`xaxis-${period}`} dataKey="name" stroke="#94a3b8" />
+              <YAxis key={`yaxis-${period}`} stroke="#94a3b8" />
               <Tooltip
+                key={`tooltip-${period}`}
                 contentStyle={{
                   backgroundColor: "#1e293b",
                   border: "1px solid #334155",
@@ -129,6 +130,7 @@ export default function UsageScreen() {
                 }}
               />
               <Area
+                key={`area-${period}`}
                 type="monotone"
                 dataKey="kwh"
                 stroke="#FFA500"

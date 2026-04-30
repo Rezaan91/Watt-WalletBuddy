@@ -45,7 +45,7 @@ export default function ChangePasswordScreen() {
 
         <div className="bg-blue-500/20 border border-blue-500/30 rounded-2xl p-4 flex gap-3">
           <Lock className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-blue-100">
+          <p className="text-sm text-foreground dark:text-gray-900">
             Use a strong password with at least 8 characters, including uppercase, lowercase, numbers, and symbols.
           </p>
         </div>

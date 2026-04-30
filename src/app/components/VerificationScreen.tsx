@@ -7,7 +7,10 @@ export default function VerificationScreen() {
   const location = useLocation();
   const { email, phone } = location.state || { email: "", phone: "" };
 
-  const [method, setMethod] = useState<"sms" | "email">("sms");
+  const [method, setMethod] = useState<"sms" | "email">(() => {
+    const saved = localStorage.getItem("twoFactorMethod");
+    return (saved as "sms" | "email") || "sms";
+  });
   const [verificationCode, setVerificationCode] = useState("");
   const [codeSent, setCodeSent] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);

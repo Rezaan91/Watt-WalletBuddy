@@ -114,7 +114,7 @@ export default function ContactSupportScreen() {
         </div>
 
         <div className="bg-blue-500/20 border border-blue-500/30 rounded-2xl p-4">
-          <p className="text-sm text-blue-100">
+          <p className="text-sm text-foreground dark:text-gray-900">
             <strong>Average response time:</strong> We typically respond within 2 hours during business hours and within 24 hours outside business hours.
           </p>
         </div>

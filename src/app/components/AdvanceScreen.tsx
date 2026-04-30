@@ -3,7 +3,7 @@ import { ArrowLeft, CreditCard, Info, Check, Clock } from "lucide-react";
 import { useNavigate } from "react-router";
 
 export default function AdvanceScreen() {
-  const [amount, setAmount] = useState("500");
+  const [amount, setAmount] = useState("120");
   const [status, setStatus] = useState<"request" | "approved" | "active">("active");
   const navigate = useNavigate();
 
@@ -22,24 +22,24 @@ export default function AdvanceScreen() {
 
           <div className="bg-gradient-to-br from-[#FF6B00] to-[#FFA500] rounded-3xl p-6 shadow-[0_0_40px_rgba(255,165,0,0.3)]">
             <p className="text-sm text-white/80 mb-1">Active Advance</p>
-            <h2 className="text-4xl mb-4">R 500</h2>
+            <h2 className="text-4xl mb-4">R 120</h2>
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-white/80">Repayment Progress</span>
-                  <span>R 200 / R 575</span>
+                  <span>R 12.78 / R 127.80</span>
                 </div>
                 <div className="w-full bg-white/20 rounded-full h-3">
-                  <div className="bg-white h-3 rounded-full w-[35%]" />
+                  <div className="bg-green-400 h-3 rounded-full w-[10%]" />
                 </div>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-white/80">Due Date</span>
-                <span>May 15, 2026</span>
+                <span>May 30, 2026</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-white/80">Remaining</span>
-                <span>R 375</span>
+                <span>R 115.02</span>
               </div>
             </div>
           </div>
@@ -70,9 +70,11 @@ export default function AdvanceScreen() {
             <h3 className="mb-3">Repayment History</h3>
             <div className="space-y-3">
               {[
-                { date: "Apr 20, 2026", amount: 100, status: "paid" },
-                { date: "Apr 13, 2026", amount: 100, status: "paid" },
-                { date: "May 6, 2026", amount: 100, status: "upcoming" },
+                { date: "May 2, 2026", amount: 12.78, status: "paid" },
+                { date: "May 9, 2026", amount: 31.95, status: "upcoming" },
+                { date: "May 16, 2026", amount: 31.95, status: "upcoming" },
+                { date: "May 23, 2026", amount: 31.95, status: "upcoming" },
+                { date: "May 30, 2026", amount: 19.17, status: "upcoming" },
               ].map((payment, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -88,7 +90,7 @@ export default function AdvanceScreen() {
                       </p>
                     </div>
                   </div>
-                  <span className="text-sm">R {payment.amount}</span>
+                  <span className="text-sm">R {payment.amount.toFixed(2)}</span>
                 </div>
               ))}
             </div>
@@ -132,7 +134,7 @@ export default function AdvanceScreen() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Due Date</span>
-                  <span>May 15, 2026</span>
+                  <span>May 30, 2026</span>
                 </div>
               </div>
             </div>
@@ -233,7 +235,7 @@ export default function AdvanceScreen() {
                 <span className="text-sm">Repayment Schedule</span>
               </div>
               <p className="text-xs text-muted-foreground">
-                4 weekly payments of R {(parseFloat(totalRepayment) / 4).toFixed(2)} starting May 1, 2026
+                4 weekly payments starting May 2, 2026
               </p>
             </div>
           </div>

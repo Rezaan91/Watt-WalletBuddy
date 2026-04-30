@@ -24,8 +24,12 @@ export default function SettingsScreen() {
     return saved !== null ? JSON.parse(saved) : false;
   });
   const [notifications, setNotifications] = useState(true);
+  const [twoFactorEnabled] = useState(() => {
+    const saved = localStorage.getItem("twoFactorEnabled");
+    return saved !== null ? JSON.parse(saved) : false;
+  });
   const navigate = useNavigate();
-  const { user, clearUser } = useUser();
+  const { user, clearUser, isPrimary } = useUser();
   const { t, i18n } = useTranslation();
 
   const getLanguageName = () => {
@@ -69,14 +73,30 @@ export default function SettingsScreen() {
     navigate("/");
   };
 
+  const getProfileSubtitle = () => {
+    return user?.name || "User";
+  };
+
+  const accountItems = [
+    { icon: User, label: t("settings.profile"), subtitle: getProfileSubtitle(), action: () => navigate("/settings/profile") },
+    { icon: Users, label: t("settings.familySharing"), subtitle: t("settings.familySharingSubtitle"), action: () => navigate("/settings/family") },
+    { icon: CreditCard, label: t("settings.paymentMethods"), subtitle: t("settings.paymentMethodsSubtitle"), action: () => navigate("/settings/payment") },
+  ];
+
+  // Add "Manage Users" option for PRIMARY users only
+  if (isPrimary()) {
+    accountItems.splice(2, 0, {
+      icon: Users,
+      label: "Manage Users",
+      subtitle: `Family Code: ${user?.householdId || "N/A"}`,
+      action: () => navigate("/settings/users")
+    });
+  }
+
   const settingsSections = [
     {
       title: t("settings.account"),
-      items: [
-        { icon: User, label: t("settings.profile"), subtitle: user?.name || "User", action: () => navigate("/settings/profile") },
-        { icon: Users, label: t("settings.familySharing"), subtitle: t("settings.familySharingSubtitle"), action: () => navigate("/settings/family") },
-        { icon: CreditCard, label: t("settings.paymentMethods"), subtitle: t("settings.paymentMethodsSubtitle"), action: () => navigate("/settings/payment") },
-      ],
+      items: accountItems,
     },
     {
       title: t("settings.preferences"),
@@ -104,7 +124,12 @@ export default function SettingsScreen() {
       title: t("settings.security"),
       items: [
         { icon: Lock, label: t("settings.changePassword"), action: () => navigate("/settings/password") },
-        { icon: Shield, label: t("settings.twoFactor"), subtitle: t("settings.twoFactorSubtitle"), action: () => navigate("/settings/twofactor") },
+        {
+          icon: Shield,
+          label: t("settings.twoFactor"),
+          subtitle: twoFactorEnabled ? "Enabled" : "Disabled",
+          action: () => navigate("/settings/twofactor")
+        },
       ],
     },
     {
@@ -129,8 +154,15 @@ export default function SettingsScreen() {
             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl">
               {user?.name ? getInitials(user.name) : "U"}
             </div>
-            <div>
-              <h3 className="text-xl">{user?.name || "User"}</h3>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xl">{user?.name || "User"}</h3>
+                {user?.role && (
+                  <span className="bg-white/20 text-white text-xs px-2 py-1 rounded">
+                    {user.role === "PRIMARY" ? "Primary" : "Secondary"}
+                  </span>
+                )}
+              </div>
               <p className="text-sm text-white/80">{user?.email || "user@example.com"}</p>
               <p className="text-xs text-white/70 mt-1">{t("settings.memberSince", { date: "April 2026" })}</p>
             </div>

@@ -1,12 +1,20 @@
 import { useState } from "react";
 import { ArrowLeft, Shield, Smartphone, Mail, Check } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useUser } from "../context/UserContext";
 
 export default function TwoFactorScreen() {
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [method, setMethod] = useState<"sms" | "email">("sms");
+  const [isEnabled, setIsEnabled] = useState(() => {
+    const saved = localStorage.getItem("twoFactorEnabled");
+    return saved !== null ? JSON.parse(saved) : false;
+  });
+  const [method, setMethod] = useState<"sms" | "email">(() => {
+    const saved = localStorage.getItem("twoFactorMethod");
+    return (saved as "sms" | "email") || "sms";
+  });
   const [verificationCode, setVerificationCode] = useState("");
   const [showVerification, setShowVerification] = useState(false);
+  const { user } = useUser();
 
   const navigate = useNavigate();
 
@@ -17,14 +25,23 @@ export default function TwoFactorScreen() {
   const handleVerify = () => {
     if (verificationCode.length === 6) {
       setIsEnabled(true);
+      localStorage.setItem("twoFactorEnabled", JSON.stringify(true));
+      localStorage.setItem("twoFactorMethod", method);
       setShowVerification(false);
-      navigate("/settings");
+      setVerificationCode("");
     }
   };
 
   const handleDisable = () => {
     setIsEnabled(false);
-    navigate("/settings");
+    localStorage.setItem("twoFactorEnabled", JSON.stringify(false));
+  };
+
+  const handleMethodChange = (newMethod: "sms" | "email") => {
+    setMethod(newMethod);
+    if (isEnabled) {
+      localStorage.setItem("twoFactorMethod", newMethod);
+    }
   };
 
   return (
@@ -43,10 +60,10 @@ export default function TwoFactorScreen() {
         <div className={`${isEnabled ? "bg-green-500/20 border-green-500/30" : "bg-blue-500/20 border-blue-500/30"} border rounded-2xl p-4 flex gap-3`}>
           <Shield className={`w-5 h-5 ${isEnabled ? "text-green-400" : "text-blue-400"} flex-shrink-0 mt-0.5`} />
           <div>
-            <p className={`mb-2 ${isEnabled ? "text-green-100" : "text-blue-100"}`}>
+            <p className={`mb-2 ${isEnabled ? "text-gray-900 dark:text-gray-100" : "text-foreground dark:text-gray-900"}`}>
               {isEnabled ? "Two-factor authentication is enabled" : "Two-factor authentication adds an extra security layer"}
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-900 dark:text-gray-100">
               {isEnabled
                 ? "Your account is protected with two-factor authentication"
                 : "You'll need to enter a code from your phone in addition to your password"}
@@ -60,7 +77,7 @@ export default function TwoFactorScreen() {
               <h3 className="text-sm text-muted-foreground mb-3 px-2">Choose Verification Method</h3>
               <div className="space-y-3">
                 <button
-                  onClick={() => setMethod("sms")}
+                  onClick={() => handleMethodChange("sms")}
                   className={`w-full p-4 rounded-2xl border-2 flex items-center gap-4 transition-all ${
                     method === "sms"
                       ? "border-primary bg-primary/10"
@@ -72,7 +89,9 @@ export default function TwoFactorScreen() {
                   </div>
                   <div className="flex-1 text-left">
                     <p>SMS Text Message</p>
-                    <p className="text-sm text-muted-foreground">+27 82 ••• 4567</p>
+                    <p className="text-sm text-muted-foreground">
+                      {user?.phone ? user.phone.replace(/(\d{3})(\d{2}).*(\d{4})/, '$1 $2 ••• $3') : '+27 71 ••• 5678'}
+                    </p>
                   </div>
                   {method === "sms" && (
                     <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
@@ -82,7 +101,7 @@ export default function TwoFactorScreen() {
                 </button>
 
                 <button
-                  onClick={() => setMethod("email")}
+                  onClick={() => handleMethodChange("email")}
                   className={`w-full p-4 rounded-2xl border-2 flex items-center gap-4 transition-all ${
                     method === "email"
                       ? "border-primary bg-primary/10"
@@ -94,7 +113,9 @@ export default function TwoFactorScreen() {
                   </div>
                   <div className="flex-1 text-left">
                     <p>Email</p>
-                    <p className="text-sm text-muted-foreground">thabo.m••••@example.com</p>
+                    <p className="text-sm text-muted-foreground">
+                      {user?.email ? user.email.replace(/(.{6}).*(@.*)/, '$1••••$2') : 'zhaida••••@wattwallet.co.za'}
+                    </p>
                   </div>
                   {method === "email" && (
                     <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
@@ -157,12 +178,67 @@ export default function TwoFactorScreen() {
         )}
 
         {isEnabled && (
-          <button
-            onClick={handleDisable}
-            className="w-full bg-red-500/20 border border-red-500/30 text-red-400 py-4 rounded-2xl hover:bg-red-500/30 transition-colors"
-          >
-            Disable Two-Factor Authentication
-          </button>
+          <>
+            <div className="bg-card/50 backdrop-blur-lg rounded-2xl p-4 border border-border/50">
+              <h3 className="text-sm text-muted-foreground mb-3 px-2">Current Settings</h3>
+              <div className="space-y-3">
+                <button
+                  onClick={() => handleMethodChange("sms")}
+                  className={`w-full p-4 rounded-2xl border-2 flex items-center gap-4 transition-all ${
+                    method === "sms"
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-card/50"
+                  }`}
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#FF6B00] to-[#FFA500] rounded-xl flex items-center justify-center">
+                    <Smartphone className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p>SMS Text Message</p>
+                    <p className="text-sm text-muted-foreground">
+                      {user?.phone ? user.phone.replace(/(\d{3})(\d{2}).*(\d{4})/, '$1 $2 ••• $3') : '+27 71 ••• 5678'}
+                    </p>
+                  </div>
+                  {method === "sms" && (
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                      <Check className="w-4 h-4" />
+                    </div>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => handleMethodChange("email")}
+                  className={`w-full p-4 rounded-2xl border-2 flex items-center gap-4 transition-all ${
+                    method === "email"
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-card/50"
+                  }`}
+                >
+                  <div className="w-12 h-12 bg-muted rounded-xl flex items-center justify-center">
+                    <Mail className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p>Email</p>
+                    <p className="text-sm text-muted-foreground">
+                      {user?.email ? user.email.replace(/(.{6}).*(@.*)/, '$1••••$2') : 'zhaida••••@wattwallet.co.za'}
+                    </p>
+                  </div>
+                  {method === "email" && (
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                      <Check className="w-4 h-4" />
+                    </div>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <button
+              onClick={handleDisable}
+              className="w-full bg-red-500/20 border border-red-500/30 text-red-400 py-4 rounded-2xl hover:bg-red-500/30 transition-colors"
+            >
+              Disable Two-Factor Authentication
+            </button>
+          </>
         )}
       </div>
     </div>

@@ -6,7 +6,7 @@ const initialMessages = [
   {
     id: 1,
     role: "assistant",
-    content: "Hi Thabo! 👋 I'm your WattWallet AI assistant. I can help you with electricity tips, budget advice, and answer questions about your usage. How can I help you today?",
+    content: "Hi Zhaida! 👋 I'm WattAssist, your WattWallet AI assistant. I can help you with electricity tips, budget advice, and answer questions about your usage. How can I help you today?",
     timestamp: "14:30",
   },
 ];

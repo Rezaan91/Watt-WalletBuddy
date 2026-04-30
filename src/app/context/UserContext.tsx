@@ -1,16 +1,23 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
+
+export type UserRole = "PRIMARY" | "SECONDARY";
 
 interface UserData {
   name: string;
   email: string;
   phone: string;
   idNumber: string;
+  meterNumber?: string;
+  address?: string;
+  householdId?: string;
+  role?: UserRole;
 }
 
 interface UserContextType {
   user: UserData | null;
   setUser: (user: UserData) => void;
   clearUser: () => void;
+  isPrimary: () => boolean;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -29,10 +36,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const clearUser = () => {
     setUserState(null);
     localStorage.removeItem("userData");
+    localStorage.removeItem("householdUsers");
+  };
+
+  const isPrimary = () => {
+    return user?.role === "PRIMARY";
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser, clearUser }}>
+    <UserContext.Provider value={{ user, setUser, clearUser, isPrimary }}>
       {children}
     </UserContext.Provider>
   );

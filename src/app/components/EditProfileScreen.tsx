@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Camera, Save } from "lucide-react";
+import { ArrowLeft, Camera, Save, Zap } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useUser } from "../context/UserContext";
 
@@ -10,7 +10,8 @@ export default function EditProfileScreen() {
     email: user?.email || "",
     phone: user?.phone || "",
     idNumber: user?.idNumber || "",
-    address: "",
+    meterNumber: user?.meterNumber || "",
+    address: user?.address || "",
   });
 
   const navigate = useNavigate();
@@ -22,7 +23,8 @@ export default function EditProfileScreen() {
         email: user.email,
         phone: user.phone,
         idNumber: user.idNumber,
-        address: "",
+        meterNumber: user.meterNumber || "",
+        address: user.address || "",
       });
     }
   }, [user]);
@@ -42,6 +44,8 @@ export default function EditProfileScreen() {
       email: formData.email,
       phone: formData.phone,
       idNumber: formData.idNumber,
+      meterNumber: formData.meterNumber,
+      address: formData.address,
     });
     navigate("/settings");
   };
@@ -112,12 +116,33 @@ export default function EditProfileScreen() {
           </div>
 
           <div>
+            <label className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
+              Meter Number
+              <span className="inline-flex items-center gap-1 bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded-full">
+                <Zap className="w-3 h-3" />
+                Free Electricity
+              </span>
+            </label>
+            <input
+              type="text"
+              value={formData.meterNumber}
+              onChange={(e) => setFormData({ ...formData, meterNumber: e.target.value })}
+              placeholder="e.g., 04123456789012"
+              className="w-full bg-card/50 border border-border rounded-xl py-3 px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Add your meter number to check Free Basic Electricity eligibility
+            </p>
+          </div>
+
+          <div>
             <label className="text-sm text-muted-foreground mb-2 block">Address</label>
             <textarea
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              rows={3}
-              className="w-full bg-card/50 border border-border rounded-xl py-3 px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+              rows={6}
+              placeholder="Street Address&#10;Suburb&#10;City&#10;Province&#10;Postal Code&#10;Country"
+              className="w-full bg-card/50 border border-border rounded-xl py-3 px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             />
           </div>
         </div>

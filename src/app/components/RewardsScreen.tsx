@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Gift, TrendingUp, Zap, Award, ChevronRight, Check, X, Share2, MessageCircle, Mail, Copy, Target, Calendar } from "lucide-react";
-import wattcoinLogo from "../../imports/wattcoin-logo.png";
+import { Gift, TrendingUp, Zap, Award, ChevronRight, Check, X, MessageCircle, Mail, Copy, Target, Calendar, ShoppingBag, Sparkles } from "lucide-react";
+import { useNavigate } from "react-router";
+import wattcoinLogo from "../../imports/wattcoin-logo-1.png";
 
 const earnWays = [
   { icon: Zap, title: "Smart Usage", description: "Reduce usage by 10%", reward: 50, category: "energy" },
@@ -25,13 +26,18 @@ const achievements = [
 ];
 
 export default function RewardsScreen() {
-  const [currentCoins, setCurrentCoins] = useState(1250);
+  const [currentCoins, setCurrentCoins] = useState(2450);
   const [showMessage, setShowMessage] = useState("");
   const [showSmartUsage, setShowSmartUsage] = useState(false);
   const [showWeeklyGoal, setShowWeeklyGoal] = useState(false);
   const [showReferral, setShowReferral] = useState(false);
-  const nextMilestone = 1500;
+  const earnedThisMonth = 450;
+  const nextMilestone = 3000;
   const progress = (currentCoins / nextMilestone) * 100;
+  const navigate = useNavigate();
+
+  // Safety: prevent undefined variable errors (grocery vouchers handled in /rewards/redeem route)
+  const showGroceryVouchers = false;
 
   const referralLink = "https://wattwallet.app/ref/WW123456";
 
@@ -193,6 +199,23 @@ export default function RewardsScreen() {
               );
             })}
           </div>
+        </div>
+
+        <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-3xl p-6">
+          <div className="flex items-center gap-3 mb-3">
+            <ShoppingBag className="w-6 h-6 text-green-400" />
+            <div>
+              <h3 className="text-lg">Grocery Vouchers</h3>
+              <p className="text-sm text-muted-foreground">Turn your electricity savings into groceries</p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate("/rewards/redeem")}
+            className="w-full bg-gradient-to-r from-[#FF6B00] to-[#FFA500] text-white py-3 rounded-xl shadow-[0_0_20px_rgba(255,165,0,0.3)] hover:shadow-[0_0_30px_rgba(255,165,0,0.5)] transition-shadow flex items-center justify-center gap-2"
+          >
+            <Sparkles className="w-5 h-5" />
+            <span>Redeem WattCoins</span>
+          </button>
         </div>
 
         <div>
@@ -383,8 +406,8 @@ export default function RewardsScreen() {
               </div>
 
               <div className="bg-blue-500/20 border border-blue-500/30 rounded-2xl p-4">
-                <p className="text-sm text-blue-400 mb-2">How it works:</p>
-                <ul className="space-y-1 text-xs text-muted-foreground">
+                <p className="text-sm text-foreground dark:text-gray-900 mb-2">How it works:</p>
+                <ul className="space-y-1 text-xs text-foreground dark:text-gray-900">
                   <li>• Share your unique referral link</li>
                   <li>• Your friend signs up and makes their first purchase</li>
                   <li>• You both get 100 WattCoins!</li>
@@ -421,10 +444,10 @@ export default function RewardsScreen() {
                   </button>
                   <button
                     onClick={() => handleShareReferral("email")}
-                    className="bg-blue-500/20 border border-blue-500/30 text-blue-400 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-500/30 transition-colors"
+                    className="bg-blue-500/20 border border-blue-500/30 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-500/30 transition-colors"
                   >
-                    <Mail className="w-5 h-5" />
-                    <span>Email</span>
+                    <Mail className="w-5 h-5 text-blue-400" />
+                    <span className="text-foreground dark:text-gray-900">Email</span>
                   </button>
                 </div>
               </div>
