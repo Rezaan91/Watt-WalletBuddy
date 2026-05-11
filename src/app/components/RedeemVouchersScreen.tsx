@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { ArrowLeft, ShoppingBag, Zap, Check, Copy, Sparkles, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router";
-import wattcoinLogo from "../../imports/wattcoin-logo-1.png";
+import wattcoinLogo from "../../imports/WhatsApp_Image_2026-05-05_at_10.31.27.jpeg";
 
 const voucherOptions = [
-  { id: 1, type: "electricity", title: "R 50 Electricity Credit", value: 50, cost: 50, icon: Zap },
-  { id: 2, type: "electricity", title: "R 100 Electricity Credit", value: 100, cost: 95, icon: Zap, badge: "Best Value" },
-  { id: 3, type: "electricity", title: "R 200 Electricity Credit", value: 200, cost: 180, icon: Zap },
-  { id: 4, type: "grocery", title: "Pick n Pay R 50", value: 50, cost: 50, icon: ShoppingBag, store: "Pick n Pay" },
-  { id: 5, type: "grocery", title: "Shoprite R 100", value: 100, cost: 95, icon: ShoppingBag, badge: "Popular", store: "Shoprite" },
-  { id: 6, type: "grocery", title: "Checkers R 200", value: 200, cost: 180, icon: ShoppingBag, store: "Checkers" },
+  { id: 1, type: "electricity", title: "R 50 Electricity Credit", value: 50, cost: 1000, icon: Zap },
+  { id: 2, type: "electricity", title: "R 100 Electricity Credit", value: 100, cost: 1900, icon: Zap, badge: "Best Value" },
+  { id: 3, type: "electricity", title: "R 200 Electricity Credit", value: 200, cost: 3600, icon: Zap },
+  { id: 4, type: "grocery", title: "Pick n Pay R 50", value: 50, cost: 1000, icon: ShoppingBag, store: "Pick n Pay" },
+  { id: 5, type: "grocery", title: "Shoprite R 100", value: 100, cost: 1900, icon: ShoppingBag, badge: "Popular", store: "Shoprite" },
+  { id: 6, type: "grocery", title: "Checkers R 200", value: 200, cost: 3600, icon: ShoppingBag, store: "Checkers" },
 ];
 
 export default function RedeemVouchersScreen() {
@@ -35,14 +35,15 @@ export default function RedeemVouchersScreen() {
 
     if (value) {
       const amount = parseFloat(value);
+      const wattCoinCost = amount * 20; // 1 WC = R0.05, so R1 = 20 WC
       if (isNaN(amount)) {
         setCustomAmountError("Please enter a valid amount");
       } else if (amount < 30) {
         setCustomAmountError("Minimum amount is R 30");
       } else if (amount > 500) {
         setCustomAmountError("Maximum amount is R 500");
-      } else if (amount > currentCoins) {
-        setCustomAmountError(`You need ${amount - currentCoins} more WattCoins`);
+      } else if (wattCoinCost > currentCoins) {
+        setCustomAmountError(`You need ${wattCoinCost - currentCoins} more WattCoins`);
       } else {
         // Create custom voucher
         const customVoucher = {
@@ -50,7 +51,7 @@ export default function RedeemVouchersScreen() {
           type: "electricity" as const,
           title: `R ${amount} Electricity Credit`,
           value: amount,
-          cost: amount,
+          cost: wattCoinCost,
           icon: Zap,
         };
         setSelectedVoucher(customVoucher);
@@ -245,7 +246,7 @@ export default function RedeemVouchersScreen() {
               <p className="text-sm text-white/80 mb-1">WattCoins Balance</p>
               <h2 className="text-4xl">{currentCoins} WC</h2>
             </div>
-            <img src={wattcoinLogo} alt="WattCoins" className="w-16 h-16" />
+            <img src={wattcoinLogo} alt="WattCoins" className="w-20 h-20 object-contain drop-shadow-lg" />
           </div>
           <p className="text-xs text-white/80 mt-4">
             Earn more by paying on time and saving electricity

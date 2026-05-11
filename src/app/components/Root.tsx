@@ -3,6 +3,7 @@ import { Home, TrendingUp, Zap, Award, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import BackgroundLogo from "./BackgroundLogo";
 import { useTranslation } from "react-i18next";
+import AIAssistantWidget from "./AIAssistantWidget";
 
 export default function Root() {
   const location = useLocation();
@@ -41,8 +42,11 @@ export default function Root() {
         <Outlet />
       </main>
 
+      {/* Floating AI Assistant Widget */}
+      <AIAssistantWidget />
+
       {showNav && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-4 py-3 safe-area-bottom z-50">
+        <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-4 py-3 safe-area-bottom z-40">
           <div className="flex justify-around items-center max-w-md mx-auto">
             {navItems.map((item) => {
               const Icon = item.icon;

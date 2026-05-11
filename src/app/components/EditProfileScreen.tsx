@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, Camera, Save, Zap } from "lucide-react";
 import { useNavigate } from "react-router";
-import { useUser } from "../context/UserContext";
+import { useUser, UserGender } from "../context/UserContext";
 
 export default function EditProfileScreen() {
   const { user, setUser } = useUser();
@@ -12,6 +12,7 @@ export default function EditProfileScreen() {
     idNumber: user?.idNumber || "",
     meterNumber: user?.meterNumber || "",
     address: user?.address || "",
+    gender: (user?.gender || "female") as UserGender,
   });
 
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ export default function EditProfileScreen() {
         idNumber: user.idNumber,
         meterNumber: user.meterNumber || "",
         address: user.address || "",
+        gender: (user.gender || "female") as UserGender,
       });
     }
   }, [user]);
@@ -46,6 +48,9 @@ export default function EditProfileScreen() {
       idNumber: formData.idNumber,
       meterNumber: formData.meterNumber,
       address: formData.address,
+      gender: formData.gender,
+      householdId: user?.householdId,
+      role: user?.role,
     });
     navigate("/settings");
   };
@@ -144,6 +149,46 @@ export default function EditProfileScreen() {
               placeholder="Street Address&#10;Suburb&#10;City&#10;Province&#10;Postal Code&#10;Country"
               className="w-full bg-card/50 border border-border rounded-xl py-3 px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             />
+          </div>
+
+          <div>
+            <label className="text-sm text-muted-foreground mb-2 block">Gender Preference</label>
+            <p className="text-xs text-muted-foreground mb-3">This affects your AI Assistant's name and voice</p>
+            <div className="grid grid-cols-3 gap-3">
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, gender: "female" })}
+                className={`py-3 px-4 rounded-xl text-sm transition-all ${
+                  formData.gender === "female"
+                    ? "bg-gradient-to-r from-[#FF6B00] to-[#FFA500] text-white"
+                    : "bg-card/50 text-foreground border border-border hover:border-primary"
+                }`}
+              >
+                Female
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, gender: "male" })}
+                className={`py-3 px-4 rounded-xl text-sm transition-all ${
+                  formData.gender === "male"
+                    ? "bg-gradient-to-r from-[#FF6B00] to-[#FFA500] text-white"
+                    : "bg-card/50 text-foreground border border-border hover:border-primary"
+                }`}
+              >
+                Male
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, gender: "neutral" })}
+                className={`py-3 px-4 rounded-xl text-sm transition-all ${
+                  formData.gender === "neutral"
+                    ? "bg-gradient-to-r from-[#FF6B00] to-[#FFA500] text-white"
+                    : "bg-card/50 text-foreground border border-border hover:border-primary"
+                }`}
+              >
+                Rather Not Say
+              </button>
+            </div>
           </div>
         </div>
 

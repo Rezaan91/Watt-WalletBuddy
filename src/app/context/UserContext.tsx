@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
 export type UserRole = "PRIMARY" | "SECONDARY";
+export type UserGender = "female" | "male" | "neutral";
 
 interface UserData {
   name: string;
@@ -11,6 +12,7 @@ interface UserData {
   address?: string;
   householdId?: string;
   role?: UserRole;
+  gender?: UserGender;
 }
 
 interface UserContextType {

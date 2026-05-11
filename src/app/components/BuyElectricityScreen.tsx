@@ -338,9 +338,8 @@ export default function BuyElectricityScreen() {
 
         <button
           onClick={() => setShowFreeElectricity(true)}
-          className="w-full mb-6 bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-2xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] transition-shadow"
+          className="w-full mb-6 bg-gradient-to-r from-[#FF6B00] to-[#FFA500] text-white py-4 rounded-2xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,165,0,0.3)] hover:shadow-[0_0_30px_rgba(255,165,0,0.5)] transition-shadow"
         >
-          <Gift className="w-5 h-5" />
           <span>Check Free Basic Electricity Eligibility</span>
         </button>
 
@@ -490,7 +489,7 @@ export default function BuyElectricityScreen() {
 
                   <button
                     onClick={checkEligibility}
-                    className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-2xl shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] transition-shadow"
+                    className="w-full bg-gradient-to-r from-[#FF6B00] to-[#FFA500] text-white py-4 rounded-2xl shadow-[0_0_20px_rgba(255,165,0,0.3)] hover:shadow-[0_0_30px_rgba(255,165,0,0.5)] transition-shadow"
                   >
                     Check Eligibility
                   </button>
@@ -526,7 +525,7 @@ export default function BuyElectricityScreen() {
 
                       <button
                         onClick={claimFreeElectricity}
-                        className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-2xl shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] transition-shadow"
+                        className="w-full bg-gradient-to-r from-[#FF6B00] to-[#FFA500] text-white py-4 rounded-2xl shadow-[0_0_20px_rgba(255,165,0,0.3)] hover:shadow-[0_0_30px_rgba(255,165,0,0.5)] transition-shadow"
                       >
                         Claim Free Electricity
                       </button>

@@ -15,7 +15,7 @@ import {
   AlertCircle,
   Shield,
 } from "lucide-react";
-import wattcoinLogo from "../../imports/wattcoin-logo-1.png";
+import wattcoinLogo from "../../imports/WhatsApp_Image_2026-05-05_at_10.31.27.jpeg";
 import { useUser } from "../context/UserContext";
 import { useTranslation } from "react-i18next";
 
@@ -98,17 +98,9 @@ export default function DashboardScreen() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-[#0f172a] dark:to-[#1e293b] text-foreground">
       <div className="p-6 space-y-6 max-w-md mx-auto">
-        <div className="flex justify-between items-center">
-          <div>
-            <p className="text-sm text-muted-foreground">{t("greeting")},</p>
-            <h1 className="text-2xl">{user?.name || "User"}</h1>
-          </div>
-          <button
-            onClick={() => navigate("/assistant")}
-            className="w-12 h-12 bg-gradient-to-br from-[#FF6B00] to-[#FFA500] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,165,0,0.4)] hover:shadow-[0_0_30px_rgba(255,165,0,0.6)] transition-shadow"
-          >
-            <MessageCircle className="w-6 h-6 text-white" />
-          </button>
+        <div>
+          <p className="text-sm text-muted-foreground">{t("greeting")},</p>
+          <h1 className="text-2xl">{user?.name || "User"}</h1>
         </div>
 
         <div className="bg-gradient-to-br from-[#FF6B00] to-[#FFA500] rounded-3xl p-6 shadow-[0_0_40px_rgba(255,165,0,0.3)] relative overflow-hidden">
@@ -133,11 +125,11 @@ export default function DashboardScreen() {
             </div>
             <p className="text-sm text-muted-foreground">Smart Meter</p>
             <p className="text-lg">Active</p>
-            <p className="text-xs text-muted-foreground mt-1">Meter: 04178522931</p>
+            <p className="text-xs text-muted-foreground mt-1">Last sync: 2 min ago</p>
           </div>
 
           <div className="bg-card/50 backdrop-blur-lg rounded-2xl p-4 border border-border/50">
-            <img src={wattcoinLogo} alt="WattCoins" className="w-8 h-8 mb-2" />
+            <img src={wattcoinLogo} alt="WattCoins" className="w-10 h-10 mb-2 object-contain" />
             <p className="text-sm text-muted-foreground">
               {!isPrimary() && user?.email === "keagsan@wattwalletdemo.co.za" ? "My WattCoins" : "WattCoins"}
             </p>

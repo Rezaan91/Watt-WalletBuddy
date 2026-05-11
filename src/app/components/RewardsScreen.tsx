@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Gift, TrendingUp, Zap, Award, ChevronRight, Check, X, MessageCircle, Mail, Copy, Target, Calendar, ShoppingBag, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router";
-import wattcoinLogo from "../../imports/wattcoin-logo-1.png";
+import wattcoinLogo from "../../imports/coin.png";
 
 const earnWays = [
   { icon: Zap, title: "Smart Usage", description: "Reduce usage by 10%", reward: 50, category: "energy" },
@@ -10,10 +10,10 @@ const earnWays = [
 ];
 
 const redeemOptionsData = [
-  { title: "R 50 Electricity Credit", cost: 500 },
-  { title: "R 100 Electricity Credit", cost: 950 },
-  { title: "R 200 Electricity Credit", cost: 1800 },
-  { title: "Free Smart Meter Upgrade", cost: 2500 },
+  { title: "R 50 Electricity Credit", cost: 1000 },
+  { title: "R 100 Electricity Credit", cost: 1900 },
+  { title: "R 200 Electricity Credit", cost: 3600 },
+  { title: "Free Smart Meter Upgrade", cost: 5000 },
 ];
 
 const achievements = [
@@ -105,7 +105,7 @@ export default function RewardsScreen() {
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full -ml-16 -mb-16" />
 
           <div className="relative z-10">
-            <img src={wattcoinLogo} alt="WattCoins" className="w-16 h-16 mb-4" />
+            <img src={wattcoinLogo} alt="WattCoins" className="w-20 h-20 mb-4 object-contain drop-shadow-lg" />
             <p className="text-sm text-white/80 mb-1">Your Balance</p>
             <h2 className="text-5xl mb-6">{currentCoins.toLocaleString()} WC</h2>
 
