@@ -231,153 +231,15 @@ export default function AuthScreen() {
   };
 
   const handleGoogleSignIn = () => {
-    const googleEmail = "zhaida@wattwalletdemo.co.za";
-    const userName = "Zhaida Juries";
-    const householdId = "JURIES-8472";
-
-    // Store Juries Family household
-    const households = JSON.parse(localStorage.getItem("households") || "{}");
-    if (!households[householdId]) {
-      households[householdId] = {
-        householdName: "Juries Family",
-        meterNumber: "04178522931",
-        address: "24 Protea Crescent\nMitchells Plain\nCape Town\nWestern Cape\n7785\nSouth Africa",
-        primaryUser: googleEmail,
-        status: "Active",
-        monthlyBudget: 1500,
-        wattCoinsBalance: 2450
-      };
-      localStorage.setItem("households", JSON.stringify(households));
-    }
-
-    // Ensure household members are stored
-    const savedMembers = localStorage.getItem("householdUsers");
-    if (!savedMembers) {
-      const members = [
-        { id: "1", name: "Zhaida Juries", email: "zhaida@wattwalletdemo.co.za", phone: "+27 71 234 5678", role: "PRIMARY", joinedDate: "March 2026" },
-        { id: "2", name: "Keagsan Juries", email: "keagsan@wattwalletdemo.co.za", phone: "+27 72 458 9136", role: "SECONDARY", joinedDate: "March 2026", wattCoins: 350, lastLogin: "Today — 08:42 AM" },
-        { id: "3", name: "Nicole Jacobs", email: "nicole@wattwalletdemo.co.za", phone: "+27 83 567 8901", role: "SECONDARY", joinedDate: "April 2026" },
-        { id: "4", name: "Simon Van Wyk", email: "simon@wattwalletdemo.co.za", phone: "+27 84 678 9012", role: "SECONDARY", joinedDate: "Pending" }
-      ];
-      localStorage.setItem("householdUsers", JSON.stringify(members));
-    }
-
-    setUser({
-      name: userName,
-      email: googleEmail,
-      phone: "+27 71 234 5678",
-      idNumber: "9604290812346",
-      meterNumber: "04178522931",
-      address: "24 Protea Crescent\nMitchells Plain\nCape Town\nWestern Cape\n7785\nSouth Africa",
-      householdId,
-      role: "PRIMARY"
-    });
-    const twoFactorEnabled = localStorage.getItem("twoFactorEnabled");
-    if (twoFactorEnabled && JSON.parse(twoFactorEnabled)) {
-      navigate("/verify", { state: { email: googleEmail, phone: "+27 71 234 5678" } });
-    } else {
-      navigate("/dashboard");
-    }
+    alert("Google Sign-In is not configured in this demo. Please use the email/password sign-in or create an account.");
   };
 
   const handleMicrosoftSignIn = () => {
-    const msEmail = "zhaida@wattwalletdemo.co.za";
-    const userName = "Zhaida Juries";
-    const householdId = "JURIES-8472";
-
-    // Store Juries Family household
-    const households = JSON.parse(localStorage.getItem("households") || "{}");
-    if (!households[householdId]) {
-      households[householdId] = {
-        householdName: "Juries Family",
-        meterNumber: "04178522931",
-        address: "24 Protea Crescent\nMitchells Plain\nCape Town\nWestern Cape\n7785\nSouth Africa",
-        primaryUser: msEmail,
-        status: "Active",
-        monthlyBudget: 1500,
-        wattCoinsBalance: 2450
-      };
-      localStorage.setItem("households", JSON.stringify(households));
-    }
-
-    // Ensure household members are stored
-    const savedMembers = localStorage.getItem("householdUsers");
-    if (!savedMembers) {
-      const members = [
-        { id: "1", name: "Zhaida Juries", email: "zhaida@wattwalletdemo.co.za", phone: "+27 71 234 5678", role: "PRIMARY", joinedDate: "March 2026" },
-        { id: "2", name: "Keagsan Juries", email: "keagsan@wattwalletdemo.co.za", phone: "+27 72 458 9136", role: "SECONDARY", joinedDate: "March 2026", wattCoins: 350, lastLogin: "Today — 08:42 AM" },
-        { id: "3", name: "Nicole Jacobs", email: "nicole@wattwalletdemo.co.za", phone: "+27 83 567 8901", role: "SECONDARY", joinedDate: "April 2026" },
-        { id: "4", name: "Simon Van Wyk", email: "simon@wattwalletdemo.co.za", phone: "+27 84 678 9012", role: "SECONDARY", joinedDate: "Pending" }
-      ];
-      localStorage.setItem("householdUsers", JSON.stringify(members));
-    }
-
-    setUser({
-      name: userName,
-      email: msEmail,
-      phone: "+27 71 234 5678",
-      idNumber: "9604290812346",
-      meterNumber: "04178522931",
-      address: "24 Protea Crescent\nMitchells Plain\nCape Town\nWestern Cape\n7785\nSouth Africa",
-      householdId,
-      role: "PRIMARY"
-    });
-    const twoFactorEnabled = localStorage.getItem("twoFactorEnabled");
-    if (twoFactorEnabled && JSON.parse(twoFactorEnabled)) {
-      navigate("/verify", { state: { email: msEmail, phone: "+27 71 234 5678" } });
-    } else {
-      navigate("/dashboard");
-    }
+    alert("Microsoft Sign-In is not configured in this demo. Please use the email/password sign-in or create an account.");
   };
 
   const handleAppleSignIn = () => {
-    const appleEmail = "zhaida@wattwalletdemo.co.za";
-    const userName = "Zhaida Juries";
-    const householdId = "JURIES-8472";
-
-    // Store Juries Family household
-    const households = JSON.parse(localStorage.getItem("households") || "{}");
-    if (!households[householdId]) {
-      households[householdId] = {
-        householdName: "Juries Family",
-        meterNumber: "04178522931",
-        address: "24 Protea Crescent\nMitchells Plain\nCape Town\nWestern Cape\n7785\nSouth Africa",
-        primaryUser: appleEmail,
-        status: "Active",
-        monthlyBudget: 1500,
-        wattCoinsBalance: 2450
-      };
-      localStorage.setItem("households", JSON.stringify(households));
-    }
-
-    // Ensure household members are stored
-    const savedMembers = localStorage.getItem("householdUsers");
-    if (!savedMembers) {
-      const members = [
-        { id: "1", name: "Zhaida Juries", email: "zhaida@wattwalletdemo.co.za", phone: "+27 71 234 5678", role: "PRIMARY", joinedDate: "March 2026" },
-        { id: "2", name: "Keagsan Juries", email: "keagsan@wattwalletdemo.co.za", phone: "+27 72 458 9136", role: "SECONDARY", joinedDate: "March 2026", wattCoins: 350, lastLogin: "Today — 08:42 AM" },
-        { id: "3", name: "Nicole Jacobs", email: "nicole@wattwalletdemo.co.za", phone: "+27 83 567 8901", role: "SECONDARY", joinedDate: "April 2026" },
-        { id: "4", name: "Simon Van Wyk", email: "simon@wattwalletdemo.co.za", phone: "+27 84 678 9012", role: "SECONDARY", joinedDate: "Pending" }
-      ];
-      localStorage.setItem("householdUsers", JSON.stringify(members));
-    }
-
-    setUser({
-      name: userName,
-      email: appleEmail,
-      phone: "+27 71 234 5678",
-      idNumber: "9604290812346",
-      meterNumber: "04178522931",
-      address: "24 Protea Crescent\nMitchells Plain\nCape Town\nWestern Cape\n7785\nSouth Africa",
-      householdId,
-      role: "PRIMARY"
-    });
-    const twoFactorEnabled = localStorage.getItem("twoFactorEnabled");
-    if (twoFactorEnabled && JSON.parse(twoFactorEnabled)) {
-      navigate("/verify", { state: { email: appleEmail, phone: "+27 71 234 5678" } });
-    } else {
-      navigate("/dashboard");
-    }
+    alert("Apple Sign-In is not configured in this demo. Please use the email/password sign-in or create an account.");
   };
 
   return (

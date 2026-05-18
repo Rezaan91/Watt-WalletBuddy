@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, ShoppingBag, Zap, Check, Copy, Sparkles, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router";
-import wattcoinLogo from "../../imports/WhatsApp_Image_2026-05-05_at_10.31.27.jpeg";
+import wattcoinLogo from "../../imports/WC.png";
 
 const voucherOptions = [
   { id: 1, type: "electricity", title: "R 50 Electricity Credit", value: 50, cost: 1000, icon: Zap },

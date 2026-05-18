@@ -15,7 +15,7 @@ import {
   AlertCircle,
   Shield,
 } from "lucide-react";
-import wattcoinLogo from "../../imports/WhatsApp_Image_2026-05-05_at_10.31.27.jpeg";
+import wattcoinLogo from "../../imports/WC.png";
 import { useUser } from "../context/UserContext";
 import { useTranslation } from "react-i18next";
 

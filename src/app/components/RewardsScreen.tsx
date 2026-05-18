@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Gift, TrendingUp, Zap, Award, ChevronRight, Check, X, MessageCircle, Mail, Copy, Target, Calendar, ShoppingBag, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router";
-import wattcoinLogo from "../../imports/coin.png";
+import wattcoinLogo from "../../imports/WC.png";
 
 const earnWays = [
   { icon: Zap, title: "Smart Usage", description: "Reduce usage by 10%", reward: 50, category: "energy" },
