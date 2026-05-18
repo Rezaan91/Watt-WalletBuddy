@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import BackgroundLogo from "./BackgroundLogo";
 import { useTranslation } from "react-i18next";
 import AIAssistantWidget from "./AIAssistantWidget";
+import { useUser } from "../context/UserContext";
 
 export default function Root() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showNav, setShowNav] = useState(true);
   const { t } = useTranslation();
+  const { user } = useUser();
 
   useEffect(() => {
     const saved = localStorage.getItem("darkMode");
@@ -42,8 +44,8 @@ export default function Root() {
         <Outlet />
       </main>
 
-      {/* Floating AI Assistant Widget */}
-      <AIAssistantWidget />
+      {/* Floating AI Assistant Widget - Only show when user is logged in */}
+      {user && <AIAssistantWidget />}
 
       {showNav && (
         <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-4 py-3 safe-area-bottom z-40">
