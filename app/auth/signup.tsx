@@ -10,7 +10,7 @@ import { useWattWallet } from "@/lib/wattwallet/store";
 export default function SignupScreen() {
   const colors = useColors();
   const { signUp } = useWattWallet();
-  const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "", confirmPassword: "" });
+  const [form, setForm] = useState({ firstName: "", lastName: "", idNumber: "", mobileNumber: "", email: "", password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -37,7 +37,9 @@ export default function SignupScreen() {
         <Surface style={styles.formCard}>
           <Text style={[styles.formTitle, { color: colors.foreground }]}>Create account</Text>
           <Text style={[styles.formSubtitle, { color: colors.muted }]}>Your details stay isolated to this device.</Text>
-          <View style={styles.nameRow}><View style={styles.nameField}><Field label="First name" value={form.firstName} onChangeText={(value) => update("firstName", value)} placeholder="Keagan" autoCapitalize="words" /></View><View style={styles.nameField}><Field label="Last name" value={form.lastName} onChangeText={(value) => update("lastName", value)} placeholder="Mokoena" autoCapitalize="words" /></View></View>
+          <View style={styles.nameRow}><View style={styles.nameField}><Field label="First name" value={form.firstName} onChangeText={(value) => update("firstName", value)} placeholder="John" autoCapitalize="words" /></View><View style={styles.nameField}><Field label="Last name" value={form.lastName} onChangeText={(value) => update("lastName", value)} placeholder="Doe" autoCapitalize="words" /></View></View>
+          <Field label="SA ID Number" value={form.idNumber} onChangeText={(value) => update("idNumber", value)} keyboardType="number-pad" placeholder="8001015000080" />
+          <Field label="Mobile number" value={form.mobileNumber} onChangeText={(value) => update("mobileNumber", value)} keyboardType="phone-pad" placeholder="082 123 4567" />
           <Field label="Email address" value={form.email} onChangeText={(value) => update("email", value)} keyboardType="email-address" autoCapitalize="none" placeholder="you@example.com" />
           <View><Field label="Password" value={form.password} onChangeText={(value) => update("password", value)} secureTextEntry={!showPassword} autoCapitalize="none" placeholder="At least 8 characters" /><Pressable accessibilityLabel={showPassword ? "Hide password" : "Show password"} onPress={() => setShowPassword((value) => !value)} style={styles.passwordToggle}><MaterialIcons name={showPassword ? "visibility-off" : "visibility"} size={20} color={colors.muted} /></Pressable></View>
           <Field label="Confirm password" value={form.confirmPassword} onChangeText={(value) => update("confirmPassword", value)} secureTextEntry={!showPassword} autoCapitalize="none" placeholder="Repeat your password" onSubmitEditing={submit} returnKeyType="done" />

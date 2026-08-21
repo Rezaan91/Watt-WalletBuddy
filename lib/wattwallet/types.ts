@@ -8,6 +8,8 @@ export type Profile = {
   id: string;
   firstName: string;
   lastName: string;
+  idNumber: string;
+  mobileNumber: string;
   email: string;
   createdAt: string;
 };
@@ -56,6 +58,17 @@ export type NotificationItem = {
 export type UserPreferences = {
   theme: ThemePreference;
   notificationsEnabled: boolean;
+  language: "en" | "af" | "xh";
+  assistantName: string | null;
+};
+
+export type ElectricityAdvance = {
+  id: string;
+  amount: number;
+  creditReceived: number;
+  outstandingAmount: number;
+  status: "active" | "paid";
+  createdAt: string;
 };
 
 export type UserWorkspace = {
@@ -63,6 +76,7 @@ export type UserWorkspace = {
   purchases: Purchase[];
   rewardEntries: RewardEntry[];
   notifications: NotificationItem[];
+  advances: ElectricityAdvance[];
   wattCoins: number;
   preferences: UserPreferences;
 };
@@ -116,7 +130,10 @@ export const initialWorkspace = (): UserWorkspace => ({
   preferences: {
     theme: "system",
     notificationsEnabled: true,
+    language: "en",
+    assistantName: null,
   },
+  advances: [],
 });
 
 export const createId = (prefix: string) =>

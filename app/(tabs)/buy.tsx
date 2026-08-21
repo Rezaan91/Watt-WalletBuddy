@@ -3,6 +3,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import { Pressable, ScrollView, Share, StyleSheet, Text, TextInput, View } from "react-native";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { PrimaryButton, SectionTitle, Surface, WattCoinArtwork } from "@/components/wattwallet-ui";
 import { ScreenContainer } from "@/components/screen-container";
@@ -15,6 +16,7 @@ const amountOptions = [50, 100, 150, 200, 300, 500];
 type Step = 1 | 2 | 3 | 4 | 5;
 
 export default function BuyScreen() {
+  const { t } = useTranslation();
   const colors = useColors();
   const { workspace, makePurchase } = useWattWallet();
   const [step, setStep] = useState<Step>(1);
@@ -29,7 +31,13 @@ export default function BuyScreen() {
   const chosenAmount = amount ?? Number(customAmount);
   const coinEstimate = validateAmount(chosenAmount) ? calculateWattCoins(chosenAmount) : 0;
 
-  const stepLabel = useMemo(() => ({ 1: "Select meter", 2: "Choose amount", 3: "Review purchase", 4: "Processing", 5: "Token ready" }[step]), [step]);
+  const stepLabel = useMemo(() => ({ 
+    1: t("dashboard.selectMeter", "Select meter"), 
+    2: t("dashboard.chooseAmount", "Choose amount"), 
+    3: t("dashboard.reviewPurchase", "Review purchase"), 
+    4: t("dashboard.processing", "Processing"), 
+    5: t("dashboard.tokenReady", "Token ready") 
+  }[step]), [step, t]);
 
   const beginPurchase = async () => {
     if (!meter || !validateAmount(chosenAmount)) return;
@@ -65,7 +73,32 @@ export default function BuyScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {step === 1 ? <><SectionTitle title="Which meter are you topping up?" /><Text style={[styles.helper, { color: colors.muted }]}>Choose one of your fictional Launch Edition meters.</Text>{workspace?.meters.map((item) => <Pressable key={item.id} onPress={() => setMeterId(item.id)} style={[styles.meterOption, { backgroundColor: colors.surface, borderColor: meterId === item.id ? colors.primary : colors.border }]}><View style={[styles.optionIcon, { backgroundColor: meterId === item.id ? `${colors.primary}18` : colors.surfaceMuted }]}><MaterialIcons name="speed" size={20} color={meterId === item.id ? colors.primary : colors.muted} /></View><View style={styles.optionCopy}><Text style={[styles.optionTitle, { color: colors.foreground }]}>{item.nickname}</Text><Text style={[styles.optionMeta, { color: colors.muted }]}>{maskMeter(item.meterNumber)} · {item.provider}</Text></View><MaterialIcons name={meterId === item.id ? "radio-button-checked" : "radio-button-unchecked"} size={21} color={meterId === item.id ? colors.primary : colors.muted} /></Pressable>)}<PrimaryButton title="Continue" onPress={() => setStep(2)} disabled={!meter} icon="arrow-forward" style={styles.bottomCta} /></> : null}
         {step === 2 ? <><SectionTitle title="How much would you like to buy?" /><Text style={[styles.helper, { color: colors.muted }]}>Choose a quick amount or enter a custom value from R50 to R5 000.</Text><View style={styles.amountGrid}>{amountOptions.map((option) => <Pressable key={option} onPress={() => { setAmount(option); setCustomAmount(""); }} style={[styles.amountOption, { backgroundColor: amount === option ? colors.primary : colors.surface, borderColor: amount === option ? colors.primary : colors.border }]}><Text style={[styles.amountText, { color: amount === option ? "#FFFFFF" : colors.foreground }]}>{formatCurrency(option)}</Text></Pressable>)}</View><Surface style={styles.customCard}><Text style={[styles.customLabel, { color: colors.foreground }]}>Custom amount</Text><View style={[styles.customInputWrap, { borderColor: amount === null && customAmount ? colors.primary : colors.border }]}><Text style={[styles.rand, { color: colors.muted }]}>R</Text><TextInput value={customAmount} onChangeText={(value) => { setCustomAmount(value.replace(/[^0-9]/g, "")); setAmount(null); }} keyboardType="number-pad" placeholder="Enter amount" placeholderTextColor={colors.muted} style={[styles.customInput, { color: colors.foreground }]} /></View></Surface>{customAmount && !validateAmount(Number(customAmount)) ? <Text style={[styles.validation, { color: colors.error }]}>Enter an amount between R50 and R5 000.</Text> : null}<PrimaryButton title="Review purchase" onPress={() => setStep(3)} disabled={!validateAmount(chosenAmount)} icon="arrow-forward" style={styles.bottomCta} /></> : null}
-        {step === 3 ? <><SectionTitle title="Review your purchase" /><Surface style={styles.reviewCard}><ReviewRow label="Meter" value={meter?.nickname ?? "—"} /><ReviewRow label="Meter number" value={meter ? maskMeter(meter.meterNumber) : "—"} /><ReviewRow label="Electricity amount" value={formatCurrency(chosenAmount)} strong /><ReviewRow label="WattCoins to earn" value={`+${coinEstimate}`} coin /></Surface><View style={[styles.notice, { backgroundColor: `${colors.gold}15` }]}><MaterialIcons name="info-outline" size={18} color={colors.gold} /><Text style={[styles.noticeText, { color: colors.muted }]}>Launch Edition uses a mock payment service and issues a clearly fictional demonstration token. No card or bank details are collected.</Text></View><PrimaryButton title={`Pay ${formatCurrency(chosenAmount)} securely`} onPress={() => void beginPurchase()} icon="lock-outline" style={styles.bottomCta} /></> : null}
+        {step === 3 ? <>
+          <SectionTitle title={t("dashboard.reviewPurchase", "Review your purchase")} />
+          <Surface style={styles.reviewCard}>
+            <ReviewRow label={t("dashboard.smartMeter", "Meter")} value={meter?.nickname ?? "—"} />
+            <ReviewRow label={t("dashboard.meterNumber", "Meter number")} value={meter ? maskMeter(meter.meterNumber) : "—"} />
+            <ReviewRow label={t("dashboard.electricityAmount", "Electricity amount")} value={formatCurrency(chosenAmount)} strong />
+            <ReviewRow label={t("dashboard.wattcoinsToEarn", "WattCoins to earn")} value={`+${coinEstimate}`} coin />
+          </Surface>
+          
+          {workspace?.advances.some(a => a.status === 'active') && (
+            <View style={[styles.notice, { backgroundColor: colors.primary + '15', borderColor: colors.primary, borderWidth: 1 }]}>
+              <MaterialIcons name="info-outline" size={18} color={colors.primary} />
+              <Text style={[styles.noticeText, { color: colors.foreground }]}>
+                {t("dashboard.advanceNotice", "You have an active advance. Repay it in the Advance section to clear your balance.")}
+              </Text>
+            </View>
+          )}
+
+          <View style={[styles.notice, { backgroundColor: `${colors.gold}15` }]}>
+            <MaterialIcons name="info-outline" size={18} color={colors.gold} />
+            <Text style={[styles.noticeText, { color: colors.muted }]}>
+              {t("auth.disclaimer", "Launch Edition uses a mock payment service and issues a clearly fictional demonstration token. No card or bank details are collected.")}
+            </Text>
+          </View>
+          <PrimaryButton title={t("dashboard.paySecurely", `Pay ${formatCurrency(chosenAmount)} securely`)} onPress={() => void beginPurchase()} icon="lock-outline" style={styles.bottomCta} />
+        </> : null}
         {step === 4 ? <View style={styles.processing}><View style={[styles.processingIcon, { backgroundColor: failure ? `${colors.error}18` : `${colors.primary}18` }]}><MaterialIcons name={failure ? "error-outline" : "bolt"} size={34} color={failure ? colors.error : colors.primary} /></View><Text style={[styles.processingTitle, { color: colors.foreground }]}>{failure ? "Purchase could not complete" : processing ? "Processing your purchase" : "Checking status"}</Text><Text style={[styles.processingBody, { color: colors.muted }]}>{failure || "We are simulating payment approval, then requesting your fictional electricity token."}</Text>{processing ? <Text style={[styles.processingHint, { color: colors.primary }]}>Please keep this screen open…</Text> : <><PrimaryButton title="Try again" onPress={() => setStep(3)} style={styles.bottomCta} /><PrimaryButton title="Back to home" variant="secondary" onPress={() => router.replace("/(tabs)")} style={styles.secondaryCta} /></>}</View> : null}
         {step === 5 && purchase ? <><View style={styles.successHeader}><View style={[styles.successIcon, { backgroundColor: `${colors.success}18` }]}><MaterialIcons name="check" size={31} color={colors.success} /></View><Text style={[styles.successTitle, { color: colors.foreground }]}>Token generated</Text><Text style={[styles.successBody, { color: colors.muted }]}>Your fictional demonstration token is ready. Keep it handy for your records.</Text></View><Surface style={[styles.tokenCard, { backgroundColor: colors.primary, borderColor: colors.primary }]}><Text style={styles.tokenLabel}>DEMO ELECTRICITY TOKEN</Text><Text style={styles.token}>{purchase.token}</Text><Text style={styles.tokenHint}>Fictional Launch Edition token · not valid for vending</Text><View style={styles.tokenActions}><Pressable onPress={() => void copyToken()} style={styles.tokenAction}><MaterialIcons name={copied ? "check" : "content-copy"} size={18} color="#FFFFFF" /><Text style={styles.tokenActionText}>{copied ? "Copied" : "Copy token"}</Text></Pressable><Pressable onPress={() => void shareReceipt()} style={styles.tokenAction}><MaterialIcons name="share" size={18} color="#FFFFFF" /><Text style={styles.tokenActionText}>Share receipt</Text></Pressable></View></Surface><Surface style={styles.receiptCard}><ReviewRow label="Meter" value={purchase.meterNickname} /><ReviewRow label="Amount" value={formatCurrency(purchase.amount)} /><ReviewRow label="Payment reference" value={purchase.paymentReference} /><ReviewRow label="Vending reference" value={purchase.vendingReference ?? "—"} /><ReviewRow label="WattCoins awarded" value={`+${purchase.wattCoins}`} coin /><ReviewRow label="Completed" value={formatDate(purchase.createdAt)} /></Surface><PrimaryButton title="View in history" onPress={() => router.replace("/(tabs)/history")} icon="receipt-long" /><PrimaryButton title="Buy another token" variant="secondary" onPress={() => { setStep(1); setPurchase(null); setAmount(null); setCustomAmount(""); }} style={styles.secondaryCta} /></> : null}
       </ScrollView>

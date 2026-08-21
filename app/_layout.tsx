@@ -24,6 +24,7 @@ export default function RootLayout() {
               <Stack.Screen name="auth" options={{ animation: "fade" }} />
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="buy" options={{ presentation: "modal" }} />
+              <Stack.Screen name="advance" options={{ presentation: "modal" }} />
               <Stack.Screen name="meters" options={{ presentation: "modal" }} />
               <Stack.Screen name="notifications" options={{ presentation: "modal" }} />
               <Stack.Screen name="wattassist" options={{ presentation: "modal" }} />

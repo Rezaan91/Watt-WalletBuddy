@@ -1,6 +1,7 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Link, Redirect, router } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { Field, PrimaryButton, Surface, WattWalletMark } from "@/components/wattwallet-ui";
@@ -8,6 +9,7 @@ import { useColors } from "@/hooks/use-colors";
 import { useWattWallet } from "@/lib/wattwallet/store";
 
 export default function LoginScreen() {
+  const { t } = useTranslation();
   const colors = useColors();
   const { profile, login, hydrated } = useWattWallet();
   const [email, setEmail] = useState("");
@@ -24,7 +26,7 @@ export default function LoginScreen() {
     const result = await login({ email, password });
     setLoading(false);
     if (!result.ok) {
-      setError(result.message ?? "Could not sign you in.");
+      setError(result.message ?? t("auth.loginError", "Could not sign you in."));
       return;
     }
     router.replace("/(tabs)");
@@ -33,24 +35,24 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.background }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <View style={styles.brandRow}><WattWalletMark size={48} /><View><Text style={[styles.brandName, { color: colors.foreground }]}>WattWallet</Text><Text style={[styles.brandTagline, { color: colors.muted }]}>Power your everyday</Text></View></View>
-        <View style={styles.heroCopy}><Text style={[styles.kicker, { color: colors.primary }]}>WELCOME BACK</Text><Text style={[styles.title, { color: colors.foreground }]}>Your power, in your hands.</Text><Text style={[styles.subtitle, { color: colors.muted }]}>Buy prepaid electricity, stay on top of your spend, and earn as you go.</Text></View>
+        <View style={styles.brandRow}><WattWalletMark size={48} /><View><Text style={[styles.brandName, { color: colors.foreground }]}>WattWallet</Text><Text style={[styles.brandTagline, { color: colors.muted }]}>{t("auth.tagline", "Power your everyday")}</Text></View></View>
+        <View style={styles.heroCopy}><Text style={[styles.kicker, { color: colors.primary }]}>{t("auth.welcomeBack", "WELCOME BACK").toUpperCase()}</Text><Text style={[styles.title, { color: colors.foreground }]}>{t("auth.loginTitle", "Your power, in your hands.")}</Text><Text style={[styles.subtitle, { color: colors.muted }]}>{t("auth.loginSubtitle", "Buy prepaid electricity, stay on top of your spend, and earn as you go.")}</Text></View>
         <Surface style={styles.formCard}>
-          <Text style={[styles.formTitle, { color: colors.foreground }]}>Log in</Text>
-          <Text style={[styles.formSubtitle, { color: colors.muted }]}>Use your WattWallet account details.</Text>
+          <Text style={[styles.formTitle, { color: colors.foreground }]}>{t("auth.login", "Log in")}</Text>
+          <Text style={[styles.formSubtitle, { color: colors.muted }]}>{t("auth.loginDetails", "Use your WattWallet account details.")}</Text>
           <View style={styles.formFields}>
-            <Field label="Email address" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoComplete="email" placeholder="you@example.com" />
+            <Field label={t("auth.email", "Email address")} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoComplete="email" placeholder="you@example.com" />
             <View>
-              <Field label="Password" value={password} onChangeText={setPassword} secureTextEntry={!showPassword} autoCapitalize="none" placeholder="Enter your password" onSubmitEditing={submit} returnKeyType="done" />
-              <Pressable accessibilityLabel={showPassword ? "Hide password" : "Show password"} onPress={() => setShowPassword((value) => !value)} style={styles.passwordToggle}><MaterialIcons name={showPassword ? "visibility-off" : "visibility"} size={20} color={colors.muted} /></Pressable>
+              <Field label={t("auth.password", "Password")} value={password} onChangeText={setPassword} secureTextEntry={!showPassword} autoCapitalize="none" placeholder={t("auth.passwordPlaceholder", "Enter your password")} onSubmitEditing={submit} returnKeyType="done" />
+              <Pressable accessibilityLabel={showPassword ? t("auth.hidePassword", "Hide password") : t("auth.showPassword", "Show password")} onPress={() => setShowPassword((value) => !value)} style={styles.passwordToggle}><MaterialIcons name={showPassword ? "visibility-off" : "visibility"} size={20} color={colors.muted} /></Pressable>
             </View>
           </View>
           {error ? <Text style={[styles.error, { color: colors.error }]}>{error}</Text> : null}
-          <PrimaryButton title={loading ? "Signing in…" : "Log in"} onPress={submit} disabled={loading} icon="arrow-forward" />
-          <Pressable onPress={() => router.push("/auth/forgot")} style={styles.linkButton}><Text style={[styles.link, { color: colors.primary }]}>Forgot your password?</Text></Pressable>
+          <PrimaryButton title={loading ? t("auth.signingIn", "Signing in…") : t("auth.login", "Log in")} onPress={submit} disabled={loading} icon="arrow-forward" />
+          <Pressable onPress={() => router.push("/auth/forgot")} style={styles.linkButton}><Text style={[styles.link, { color: colors.primary }]}>{t("auth.forgotPassword", "Forgot your password?")}</Text></Pressable>
         </Surface>
-        <View style={styles.signupRow}><Text style={[styles.signupText, { color: colors.muted }]}>New to WattWallet?</Text><Link href="/auth/signup" asChild><Pressable><Text style={[styles.link, { color: colors.primary }]}>Create an account</Text></Pressable></Link></View>
-        <Text style={[styles.disclaimer, { color: colors.muted }]}>Launch Edition uses simulated payments and fictional electricity tokens.</Text>
+        <View style={styles.signupRow}><Text style={[styles.signupText, { color: colors.muted }]}>{t("auth.noAccount", "New to WattWallet?")}</Text><Link href="/auth/signup" asChild><Pressable><Text style={[styles.link, { color: colors.primary }]}>{t("auth.createAccount", "Create an account")}</Text></Pressable></Link></View>
+        <Text style={[styles.disclaimer, { color: colors.muted }]}>{t("auth.disclaimer", "Launch Edition uses simulated payments and fictional electricity tokens.")}</Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );

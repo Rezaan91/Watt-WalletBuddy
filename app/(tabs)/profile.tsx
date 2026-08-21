@@ -13,10 +13,20 @@ import { useWattWallet } from "@/lib/wattwallet/store";
 export default function ProfileScreen() {
   const colors = useColors();
   const { preference: activePreference } = useThemeContext();
-  const { profile, workspace, unreadCount, setThemePreference, setNotificationsEnabled, updateProfile, logout } = useWattWallet();
+  const { profile, workspace, unreadCount, setThemePreference, setNotificationsEnabled, setLanguage, setAssistantName, updateProfile, logout } = useWattWallet();
   const [profileModal, setProfileModal] = useState(false);
-  const [profileForm, setProfileForm] = useState({ firstName: profile?.firstName ?? "", lastName: profile?.lastName ?? "" });
+  const [langModal, setLangModal] = useState(false);
+  const [profileForm, setProfileForm] = useState({ firstName: profile?.firstName ?? "", lastName: profile?.lastName ?? "", idNumber: profile?.idNumber ?? "", mobileNumber: profile?.mobileNumber ?? "" });
+  
   if (!profile || !workspace) return null;
+
+  const languages = [
+    { code: "en", name: "English", assistants: ["Thomas", "Mia"] },
+    { code: "af", name: "Afrikaans", assistants: ["Jacobus", "Maria"] },
+    { code: "xh", name: "isiXhosa", assistants: ["Bongani", "Thembi"] },
+  ];
+
+  const currentLang = languages.find(l => l.code === workspace.preferences.language) || languages[0];
   const selectedTheme = workspace.preferences.theme ?? activePreference;
 
   const saveProfile = async () => {
@@ -59,13 +69,113 @@ export default function ProfileScreen() {
         </Surface>
 
         <SectionTitle title="Preferences" />
-        <Surface style={styles.settingsCard}><View style={styles.preferenceRow}><View style={[styles.preferenceIcon, { backgroundColor: `${colors.secondary}18` }]}><MaterialIcons name="notifications-active" size={18} color={colors.secondary} /></View><View style={styles.preferenceCopy}><Text style={[styles.preferenceTitle, { color: colors.foreground }]}>In-app notifications</Text><Text style={[styles.preferenceBody, { color: colors.muted }]}>Purchase and reward updates</Text></View><Switch value={workspace.preferences.notificationsEnabled} onValueChange={(value) => void setNotificationsEnabled(value)} trackColor={{ false: colors.border, true: colors.primary }} thumbColor="#FFFFFF" /></View></Surface>
+        <Surface style={styles.settingsCard}>
+          <SettingRow 
+            icon="language" 
+            title="Language & Assistant" 
+            body={`${currentLang.name} (${workspace.preferences.assistantName || 'Not set'})`} 
+            onPress={() => setLangModal(true)} 
+          />
+          <View style={styles.preferenceRow}>
+            <View style={[styles.preferenceIcon, { backgroundColor: `${colors.secondary}18` }]}>
+              <MaterialIcons name="notifications-active" size={18} color={colors.secondary} />
+            </View>
+            <View style={styles.preferenceCopy}>
+              <Text style={[styles.preferenceTitle, { color: colors.foreground }]}>In-app notifications</Text>
+              <Text style={[styles.preferenceBody, { color: colors.muted }]}>Purchase and reward updates</Text>
+            </View>
+            <Switch 
+              value={workspace.preferences.notificationsEnabled} 
+              onValueChange={(value) => void setNotificationsEnabled(value)} 
+              trackColor={{ false: colors.border, true: colors.primary }} 
+              thumbColor="#FFFFFF" 
+            />
+          </View>
+        </Surface>
 
         <PrimaryButton title="Log out" variant="ghost" onPress={confirmLogout} icon="logout" style={styles.logoutButton} />
         <Text style={[styles.version, { color: colors.muted }]}>WattWallet Launch Edition · Mock services enabled</Text>
       </ScrollView>
       <Modal visible={profileModal} transparent animationType="slide" onRequestClose={() => setProfileModal(false)}>
-        <View style={styles.modalBackdrop}><View style={[styles.modalCard, { backgroundColor: colors.surface }]}><View style={styles.modalHeader}><Text style={[styles.modalTitle, { color: colors.foreground }]}>Edit profile</Text><Pressable onPress={() => setProfileModal(false)}><MaterialIcons name="close" size={22} color={colors.muted} /></Pressable></View><Text style={[styles.modalSubtitle, { color: colors.muted }]}>Update the name shown across your wallet.</Text><Field label="First name" value={profileForm.firstName} onChangeText={(value) => setProfileForm((current) => ({ ...current, firstName: value }))} autoCapitalize="words" /><Field label="Last name" value={profileForm.lastName} onChangeText={(value) => setProfileForm((current) => ({ ...current, lastName: value }))} autoCapitalize="words" /><PrimaryButton title="Save profile" onPress={() => void saveProfile()} /></View></View>
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.modalCard, { backgroundColor: colors.surface }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: colors.foreground }]}>Edit profile</Text>
+              <Pressable onPress={() => setProfileModal(false)}>
+                <MaterialIcons name="close" size={22} color={colors.muted} />
+              </Pressable>
+            </View>
+            <Text style={[styles.modalSubtitle, { color: colors.muted }]}>Update your account details.</Text>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Field label="First name" value={profileForm.firstName} onChangeText={(value) => setProfileForm((current) => ({ ...current, firstName: value }))} autoCapitalize="words" />
+              <Field label="Last name" value={profileForm.lastName} onChangeText={(value) => setProfileForm((current) => ({ ...current, lastName: value }))} autoCapitalize="words" />
+              <Field label="SA ID Number" value={profileForm.idNumber} onChangeText={(value) => setProfileForm((current) => ({ ...current, idNumber: value }))} keyboardType="number-pad" />
+              <Field label="Mobile number" value={profileForm.mobileNumber} onChangeText={(value) => setProfileForm((current) => ({ ...current, mobileNumber: value }))} keyboardType="phone-pad" />
+              <PrimaryButton title="Save profile" onPress={() => void saveProfile()} style={{ marginTop: 10 }} />
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={langModal} transparent animationType="slide" onRequestClose={() => setLangModal(false)}>
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.modalCard, { backgroundColor: colors.surface }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: colors.foreground }]}>Language & Assistant</Text>
+              <Pressable onPress={() => setLangModal(false)}>
+                <MaterialIcons name="close" size={22} color={colors.muted} />
+              </Pressable>
+            </View>
+            <Text style={[styles.modalSubtitle, { color: colors.muted }]}>Select your preferred language and assistant.</Text>
+            
+            <Text style={[styles.modalSectionLabel, { color: colors.foreground }]}>Select Language</Text>
+            <View style={styles.langGrid}>
+              {languages.map((lang) => (
+                <Pressable 
+                  key={lang.code} 
+                  onPress={() => {
+                    setLanguage(lang.code as any);
+                    setAssistantName(lang.assistants[0]);
+                  }}
+                  style={[
+                    styles.langOption, 
+                    { 
+                      borderColor: workspace.preferences.language === lang.code ? colors.primary : colors.border,
+                      backgroundColor: workspace.preferences.language === lang.code ? colors.primary + '12' : 'transparent'
+                    }
+                  ]}
+                >
+                  <Text style={[styles.langText, { color: workspace.preferences.language === lang.code ? colors.primary : colors.foreground }]}>
+                    {lang.name}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <Text style={[styles.modalSectionLabel, { color: colors.foreground, marginTop: 20 }]}>Choose Assistant Name</Text>
+            <View style={styles.langGrid}>
+              {currentLang.assistants.map((name) => (
+                <Pressable 
+                  key={name} 
+                  onPress={() => setAssistantName(name)}
+                  style={[
+                    styles.langOption, 
+                    { 
+                      borderColor: workspace.preferences.assistantName === name ? colors.primary : colors.border,
+                      backgroundColor: workspace.preferences.assistantName === name ? colors.primary + '12' : 'transparent'
+                    }
+                  ]}
+                >
+                  <Text style={[styles.langText, { color: workspace.preferences.assistantName === name ? colors.primary : colors.foreground }]}>
+                    {name}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <PrimaryButton title="Done" onPress={() => setLangModal(false)} style={{ marginTop: 30 }} />
+          </View>
+        </View>
       </Modal>
     </ScreenContainer>
   );
@@ -103,5 +213,9 @@ const styles = StyleSheet.create({
   modalHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   modalTitle: { fontSize: 21, fontWeight: "900" },
   modalSubtitle: { fontSize: 12, lineHeight: 18, marginTop: 5, marginBottom: 19 },
+  modalSectionLabel: { fontSize: 14, fontWeight: "800", marginBottom: 12 },
+  langGrid: { flexDirection: "row", gap: 10 },
+  langOption: { flex: 1, height: 50, borderWidth: 1, borderRadius: 12, justifyContent: "center", alignItems: "center" },
+  langText: { fontSize: 14, fontWeight: "700" },
   pressed: { opacity: 0.68 },
 });

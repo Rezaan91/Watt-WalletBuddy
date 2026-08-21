@@ -4,6 +4,7 @@ import { ScrollView, StyleSheet, Text, View, Pressable } from "react-native";
 
 import { AppHeader, PrimaryButton, SectionTitle, StatusPill, Surface, WattCoinArtwork } from "@/components/wattwallet-ui";
 import { ScreenContainer } from "@/components/screen-container";
+import { WattAssistWidget } from "@/components/wattassist-widget";
 import { useColors } from "@/hooks/use-colors";
 import { formatCurrency, formatDate, maskMeter } from "@/lib/wattwallet/types";
 import { useWattWallet } from "@/lib/wattwallet/store";
@@ -27,18 +28,56 @@ export default function HomeScreen() {
           <View style={styles.walletBottom}><View><Text style={styles.walletLabel}>Status</Text><View style={styles.walletStatus}><View style={styles.liveDot} /><Text style={styles.walletStatusText}>Ready to buy</Text></View></View><PrimaryButton title="Buy electricity" onPress={() => router.push("/(tabs)/buy")} icon="arrow-forward" style={styles.walletButton} /></View>
         </Surface>
 
-        <View style={styles.coinRow}><Surface style={styles.coinCard}><View style={styles.coinHeader}><View><Text style={[styles.cardEyebrow, { color: colors.primary }]}>WATTCOINS</Text><Text style={[styles.coinBalance, { color: colors.foreground }]}>{workspace.wattCoins.toLocaleString()}</Text><Text style={[styles.coinCaption, { color: colors.muted }]}>Available to redeem later</Text></View><WattCoinArtwork size={63} /></View><Pressable onPress={() => router.push("/(tabs)/rewards")} style={styles.textAction}><Text style={[styles.textActionLabel, { color: colors.primary }]}>View rewards</Text><MaterialIcons name="arrow-forward" size={16} color={colors.primary} /></Pressable></Surface></View>
+        <View style={styles.coinRow}>
+          <Surface style={styles.coinCard}>
+            <View style={styles.coinHeader}>
+              <View>
+                <Text style={[styles.cardEyebrow, { color: colors.primary }]}>WATTCOINS</Text>
+                <Text style={[styles.coinBalance, { color: colors.foreground }]}>{workspace.wattCoins.toLocaleString()}</Text>
+                <Text style={[styles.coinCaption, { color: colors.muted }]}>Available to redeem later</Text>
+              </View>
+              <WattCoinArtwork size={63} />
+            </View>
+            <Pressable onPress={() => router.push("/(tabs)/rewards")} style={styles.textAction}>
+              <Text style={[styles.textActionLabel, { color: colors.primary }]}>View rewards</Text>
+              <MaterialIcons name="arrow-forward" size={16} color={colors.primary} />
+            </Pressable>
+          </Surface>
+        </View>
+
+        {workspace.advances.some(a => a.status === 'active') && (
+          <View style={styles.advanceRow}>
+            <Surface style={[styles.advanceCard, { borderColor: colors.primary }]}>
+              <View style={styles.advanceHeader}>
+                <View>
+                  <Text style={[styles.cardEyebrow, { color: colors.primary }]}>ACTIVE ADVANCE</Text>
+                  <Text style={[styles.advanceAmount, { color: colors.foreground }]}>
+                    {formatCurrency(workspace.advances.find(a => a.status === 'active')?.outstandingAmount || 0)}
+                  </Text>
+                </View>
+                <View style={[styles.advanceIcon, { backgroundColor: colors.primary + '18' }]}>
+                  <MaterialIcons name="bolt" size={24} color={colors.primary} />
+                </View>
+              </View>
+              <Pressable onPress={() => router.push("/advance")} style={styles.textAction}>
+                <Text style={[styles.textActionLabel, { color: colors.primary }]}>Manage advance</Text>
+                <MaterialIcons name="arrow-forward" size={16} color={colors.primary} />
+              </Pressable>
+            </Surface>
+          </View>
+        )}
 
         <View style={styles.quickSection}><SectionTitle title="Quick actions" /><View style={styles.quickGrid}>{[
           { label: "Buy electricity", icon: "bolt", onPress: () => router.push("/(tabs)/buy"), tint: colors.primary },
           { label: "Manage meters", icon: "speed", onPress: () => router.push("/meters"), tint: colors.secondary },
-          { label: "WattAssist", icon: "chat-bubble-outline", onPress: () => router.push("/wattassist"), tint: colors.gold },
+          { label: "Electricity Advance", icon: "request-quote", onPress: () => router.push("/advance"), tint: colors.gold },
           { label: "History", icon: "receipt-long", onPress: () => router.push("/(tabs)/history"), tint: colors.primary },
         ].map((item) => <Pressable key={item.label} onPress={item.onPress} style={({ pressed }) => [styles.quickAction, { backgroundColor: colors.surface, borderColor: colors.border }, pressed && styles.pressed]}><View style={[styles.quickIcon, { backgroundColor: `${item.tint}18` }]}><MaterialIcons name={item.icon as React.ComponentProps<typeof MaterialIcons>["name"]} size={20} color={item.tint} /></View><Text style={[styles.quickLabel, { color: colors.foreground }]}>{item.label}</Text></Pressable>)}</View></View>
 
         <SectionTitle title="Recent activity" action="See all" onAction={() => router.push("/(tabs)/history")} />
         {recent.length === 0 ? <Surface muted style={styles.emptyRecent}><MaterialIcons name="auto-graph" size={22} color={colors.primary} /><Text style={[styles.emptyRecentTitle, { color: colors.foreground }]}>Your activity will appear here</Text><Text style={[styles.emptyRecentBody, { color: colors.muted }]}>Make your first simulated purchase to start your wallet history.</Text></Surface> : recent.map((purchase) => <Pressable key={purchase.id} onPress={() => router.push({ pathname: "/purchase/[id]" as never, params: { id: purchase.id } })} style={({ pressed }) => [styles.activityRow, { borderBottomColor: colors.border }, pressed && styles.pressed]}><View style={[styles.activityIcon, { backgroundColor: purchase.status === "success" ? `${colors.success}18` : `${colors.error}18` }]}><MaterialIcons name={purchase.status === "success" ? "bolt" : "error-outline"} size={19} color={purchase.status === "success" ? colors.success : colors.error} /></View><View style={styles.activityCopy}><Text style={[styles.activityTitle, { color: colors.foreground }]}>{purchase.meterNickname}</Text><Text style={[styles.activityMeta, { color: colors.muted }]}>{formatDate(purchase.createdAt)}</Text></View><View style={styles.activityAmount}><Text style={[styles.amount, { color: colors.foreground }]}>{formatCurrency(purchase.amount)}</Text><StatusPill label={purchase.status === "success" ? "Successful" : "Failed"} tone={purchase.status === "success" ? "success" : "error"} /></View></Pressable>)}
       </ScrollView>
+      <WattAssistWidget />
     </ScreenContainer>
   );
 }
@@ -64,6 +103,11 @@ const styles = StyleSheet.create({
   cardEyebrow: { fontSize: 10, letterSpacing: 1.5, fontWeight: "900" },
   coinBalance: { fontSize: 30, fontWeight: "900", letterSpacing: -0.7, marginTop: 5 },
   coinCaption: { fontSize: 12, marginTop: 3 },
+  advanceRow: { marginBottom: 24 },
+  advanceCard: { padding: 17, borderLeftWidth: 4 },
+  advanceHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  advanceAmount: { fontSize: 24, fontWeight: "900", marginTop: 5 },
+  advanceIcon: { width: 44, height: 44, borderRadius: 12, justifyContent: "center", alignItems: "center" },
   textAction: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 13 },
   textActionLabel: { fontSize: 13, fontWeight: "800" },
   quickSection: { marginBottom: 25 },

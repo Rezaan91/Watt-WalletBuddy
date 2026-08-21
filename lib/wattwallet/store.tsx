@@ -30,6 +30,7 @@ import {
   type UserWorkspace,
 } from "@/lib/wattwallet/types";
 import { loadStoredState, saveStoredState } from "@/lib/wattwallet/storage";
+import i18n from "@/src/i18n/config";
 import {
   MockPaymentProvider,
   MockVendingProvider,
@@ -46,6 +47,8 @@ export type AuthInput = {
 export type SignUpInput = AuthInput & {
   firstName: string;
   lastName: string;
+  idNumber: string;
+  mobileNumber: string;
   confirmPassword: string;
 };
 
@@ -62,6 +65,8 @@ type WattWalletContextValue = {
   updateProfile: (patch: Pick<Profile, "firstName" | "lastName">) => Promise<void>;
   setThemePreference: (preference: ThemePreference) => Promise<void>;
   setNotificationsEnabled: (enabled: boolean) => Promise<void>;
+  setLanguage: (language: "en" | "af" | "xh") => Promise<void>;
+  setAssistantName: (name: string) => Promise<void>;
   addMeter: (input: Pick<Meter, "nickname" | "meterNumber" | "provider">) => Promise<void>;
   updateMeter: (meterId: string, patch: Pick<Meter, "nickname" | "meterNumber" | "provider">) => Promise<void>;
   removeMeter: (meterId: string) => Promise<{ ok: boolean; message?: string }>;
@@ -74,6 +79,8 @@ type WattWalletContextValue = {
     paymentOutcome?: PaymentOutcome;
     vendingOutcome?: VendingOutcome;
   }) => Promise<PurchaseResult>;
+  requestAdvance: (amount: number) => Promise<{ ok: boolean; message?: string }>;
+  repayAdvance: (advanceId: string) => Promise<{ ok: boolean; message?: string }>;
 };
 
 const WattWalletContext = createContext<WattWalletContextValue | null>(null);
@@ -123,6 +130,13 @@ export function WattWalletProvider({ children }: { children: React.ReactNode }) 
     void applyThemePreference(workspace.preferences.theme);
   }, [applyThemePreference, hydrated, workspace?.preferences.theme]);
 
+  useEffect(() => {
+    if (!hydrated || !workspace) return;
+    if (i18n.language !== workspace.preferences.language) {
+      void i18n.changeLanguage(workspace.preferences.language);
+    }
+  }, [hydrated, workspace?.preferences.language]);
+
   const updateCurrentAccount = useCallback(
     (updater: (account: StoredAccount) => StoredAccount) => {
       if (!state.sessionUserId || !state.accounts[state.sessionUserId]) return null;
@@ -159,6 +173,8 @@ export function WattWalletProvider({ children }: { children: React.ReactNode }) 
         id: email,
         firstName: input.firstName.trim(),
         lastName: input.lastName.trim(),
+        idNumber: input.idNumber.trim(),
+        mobileNumber: input.mobileNumber.trim(),
         email,
         createdAt: new Date().toISOString(),
       };
@@ -242,6 +258,32 @@ export function WattWalletProvider({ children }: { children: React.ReactNode }) 
       await applyThemePreference(preference);
     },
     [applyThemePreference, updateCurrentAccount],
+  );
+
+  const setLanguage = useCallback(
+    async (language: "en" | "af" | "xh") => {
+      updateCurrentAccount((account) => ({
+        ...account,
+        workspace: {
+          ...account.workspace,
+          preferences: { ...account.workspace.preferences, language },
+        },
+      }));
+    },
+    [updateCurrentAccount],
+  );
+
+  const setAssistantName = useCallback(
+    async (name: string) => {
+      updateCurrentAccount((account) => ({
+        ...account,
+        workspace: {
+          ...account.workspace,
+          preferences: { ...account.workspace.preferences, assistantName: name },
+        },
+      }));
+    },
+    [updateCurrentAccount],
   );
 
   const setNotificationsEnabled = useCallback(
@@ -461,6 +503,61 @@ export function WattWalletProvider({ children }: { children: React.ReactNode }) 
     [profile, updateCurrentAccount, workspace],
   );
 
+  const requestAdvance = useCallback(
+    async (amount: number) => {
+      if (!profile || !workspace) return { ok: false, message: "Log in to request an advance." };
+      if (amount < 50 || amount > 100) return { ok: false, message: "Advances are limited to R50–R100." };
+      if (workspace.advances.some((a) => a.status === "active")) {
+        return { ok: false, message: "You already have an active advance." };
+      }
+
+      updateCurrentAccount((account) => {
+        const advance: ElectricityAdvance = {
+          id: createId("advance"),
+          amount,
+          creditReceived: amount,
+          outstandingAmount: amount,
+          status: "active",
+          createdAt: new Date().toISOString(),
+        };
+        return {
+          ...account,
+          workspace: {
+            ...account.workspace,
+            advances: [advance, ...account.workspace.advances],
+            notifications: [
+              createNotification("Advance approved", `R${amount} electricity credit has been added to your wallet.`, "purchase"),
+              ...account.workspace.notifications,
+            ],
+          },
+        };
+      });
+      return { ok: true };
+    },
+    [profile, updateCurrentAccount, workspace],
+  );
+
+  const repayAdvance = useCallback(
+    async (advanceId: string) => {
+      if (!profile || !workspace) return { ok: false, message: "Log in to repay." };
+      updateCurrentAccount((account) => ({
+        ...account,
+        workspace: {
+          ...account.workspace,
+          advances: account.workspace.advances.map((a) =>
+            a.id === advanceId ? { ...a, status: "paid", outstandingAmount: 0 } : a,
+          ),
+          notifications: [
+            createNotification("Advance repaid", "Your electricity advance has been settled.", "account"),
+            ...account.workspace.notifications,
+          ],
+        },
+      }));
+      return { ok: true };
+    },
+    [profile, updateCurrentAccount, workspace],
+  );
+
   const value = useMemo<WattWalletContextValue>(
     () => ({
       hydrated,
@@ -475,6 +572,8 @@ export function WattWalletProvider({ children }: { children: React.ReactNode }) 
       updateProfile,
       setThemePreference,
       setNotificationsEnabled,
+      setLanguage,
+      setAssistantName,
       addMeter,
       updateMeter,
       removeMeter,
@@ -482,6 +581,8 @@ export function WattWalletProvider({ children }: { children: React.ReactNode }) 
       markNotificationRead,
       markAllNotificationsRead,
       makePurchase,
+      requestAdvance,
+      repayAdvance,
     }),
     [
       addMeter,
@@ -495,6 +596,10 @@ export function WattWalletProvider({ children }: { children: React.ReactNode }) 
       markNotificationRead,
       profile,
       removeMeter,
+      repayAdvance,
+      requestAdvance,
+      setAssistantName,
+      setLanguage,
       setDefaultMeter,
       setNotificationsEnabled,
       setThemePreference,

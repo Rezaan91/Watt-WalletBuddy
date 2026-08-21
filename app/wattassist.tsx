@@ -19,16 +19,68 @@ const answerFor = (prompt: string, firstName: string) => {
 
 export default function WattAssistScreen() {
   const colors = useColors();
-  const { profile } = useWattWallet();
+  const { profile, workspace } = useWattWallet();
+  const assistantName = workspace?.preferences.assistantName || "WattAssist";
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<{ id: string; from: "assistant" | "user"; text: string }[]>([]);
-  const greeting = useMemo(() => `Hi ${profile?.firstName ?? "there"}. I’m WattAssist, your local electricity and financial-wellness guide.`, [profile?.firstName]);
-  const send = (text = input) => { const trimmed = text.trim(); if (!trimmed) return; setInput(""); setMessages((current) => [...current, { id: `${Date.now()}-u`, from: "user", text: trimmed }, { id: `${Date.now()}-a`, from: "assistant", text: answerFor(trimmed, profile?.firstName ?? "there") }]); };
+  
+  const greeting = useMemo(() => {
+    const base = `Hi ${profile?.firstName ?? "there"}. I’m ${assistantName}, your local electricity and financial-wellness guide.`;
+    return base;
+  }, [profile?.firstName, assistantName]);
+
+  const send = (text = input) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    setInput("");
+    setMessages((current) => [
+      ...current,
+      { id: `${Date.now()}-u`, from: "user", text: trimmed },
+      { id: `${Date.now()}-a`, from: "assistant", text: answerFor(trimmed, profile?.firstName ?? "there").replace("WattAssist", assistantName) }
+    ]);
+  };
+
   return (
     <ScreenContainer className="px-5 pt-4" edges={["top", "left", "right", "bottom"]}>
-      <View style={styles.header}><Pressable onPress={() => router.back()} style={styles.back}><MaterialIcons name="arrow-back" size={22} color={colors.foreground} /></Pressable><View style={[styles.assistIcon, { backgroundColor: colors.primary }]}><MaterialIcons name="bolt" size={20} color="#FFFFFF" /></View><View style={styles.headerCopy}><Text style={[styles.title, { color: colors.foreground }]}>WattAssist</Text><Text style={[styles.subtitle, { color: colors.muted }]}>Local guidance for Launch Edition</Text></View></View>
-      <ScrollView style={styles.chat} contentContainerStyle={styles.chatContent} showsVerticalScrollIndicator={false}><View style={[styles.bubble, styles.assistantBubble, { backgroundColor: colors.surfaceMuted }]}><Text style={[styles.bubbleText, { color: colors.foreground }]}>{greeting}</Text></View>{messages.map((message) => <View key={message.id} style={[styles.bubble, message.from === "user" ? [styles.userBubble, { backgroundColor: colors.primary }] : [styles.assistantBubble, { backgroundColor: colors.surfaceMuted }]]}><Text style={[styles.bubbleText, { color: message.from === "user" ? "#FFFFFF" : colors.foreground }]}>{message.text}</Text></View>)}{messages.length === 0 ? <View style={styles.quickWrap}><Text style={[styles.quickTitle, { color: colors.muted }]}>Try asking</Text>{quickPrompts.map((prompt) => <Pressable key={prompt} onPress={() => send(prompt)} style={[styles.prompt, { borderColor: colors.border }]}><Text style={[styles.promptText, { color: colors.foreground }]}>{prompt}</Text><MaterialIcons name="arrow-forward" size={15} color={colors.primary} /></Pressable>)}</View> : null}</ScrollView>
-      <View style={[styles.composer, { backgroundColor: colors.surface, borderColor: colors.border }]}><TextInput value={input} onChangeText={setInput} onSubmitEditing={() => send()} returnKeyType="send" placeholder="Ask WattAssist…" placeholderTextColor={colors.muted} style={[styles.input, { color: colors.foreground }]} /><Pressable onPress={() => send()} style={[styles.send, { backgroundColor: colors.primary }]}><MaterialIcons name="arrow-upward" size={19} color="#FFFFFF" /></Pressable></View>
+      <View style={styles.header}>
+        <Pressable onPress={() => router.back()} style={styles.back}>
+          <MaterialIcons name="arrow-back" size={22} color={colors.foreground} />
+        </Pressable>
+        <View style={[styles.assistIcon, { backgroundColor: colors.primary }]}>
+          <MaterialIcons name="bolt" size={20} color="#FFFFFF" />
+        </View>
+        <View style={styles.headerCopy}>
+          <Text style={[styles.title, { color: colors.foreground }]}>{assistantName}</Text>
+          <Text style={[styles.subtitle, { color: colors.muted }]}>Local guidance for Launch Edition</Text>
+        </View>
+      </View>
+      <ScrollView style={styles.chat} contentContainerStyle={styles.chatContent} showsVerticalScrollIndicator={false}>
+        <View style={[styles.bubble, styles.assistantBubble, { backgroundColor: colors.surfaceMuted }]}>
+          <Text style={[styles.bubbleText, { color: colors.foreground }]}>{greeting}</Text>
+        </View>
+        {messages.map((message) => (
+          <View key={message.id} style={[styles.bubble, message.from === "user" ? [styles.userBubble, { backgroundColor: colors.primary }] : [styles.assistantBubble, { backgroundColor: colors.surfaceMuted }]]}>
+            <Text style={[styles.bubbleText, { color: message.from === "user" ? "#FFFFFF" : colors.foreground }]}>{message.text}</Text>
+          </View>
+        ))}
+        {messages.length === 0 ? (
+          <View style={styles.quickWrap}>
+            <Text style={[styles.quickTitle, { color: colors.muted }]}>Try asking</Text>
+            {quickPrompts.map((prompt) => (
+              <Pressable key={prompt} onPress={() => send(prompt)} style={[styles.prompt, { borderColor: colors.border }]}>
+                <Text style={[styles.promptText, { color: colors.foreground }]}>{prompt}</Text>
+                <MaterialIcons name="arrow-forward" size={15} color={colors.primary} />
+              </Pressable>
+            ))}
+          </View>
+        ) : null}
+      </ScrollView>
+      <View style={[styles.composer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <TextInput value={input} onChangeText={setInput} onSubmitEditing={() => send()} returnKeyType="send" placeholder={`Ask ${assistantName}…`} placeholderTextColor={colors.muted} style={[styles.input, { color: colors.foreground }]} />
+        <Pressable onPress={() => send()} style={[styles.send, { backgroundColor: colors.primary }]}>
+          <MaterialIcons name="arrow-upward" size={19} color="#FFFFFF" />
+        </Pressable>
+      </View>
       <Text style={[styles.disclaimer, { color: colors.muted }]}>WattAssist replies are simulated locally and are not financial advice.</Text>
     </ScreenContainer>
   );
